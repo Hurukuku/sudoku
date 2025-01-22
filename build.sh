@@ -1,0 +1,1 @@
+g++ ./main.cpp ./checks.cpp ./checks.h -o main
