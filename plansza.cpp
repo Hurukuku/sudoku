@@ -15,7 +15,7 @@ bool Plansza::wybierzLiczbe(int x, int y) {
       if (x == 8 && y == 8) {
         return true;
       } else if (x == 8) {
-        n = wybierzLiczbe(0, y + 1);
+        n = wybierzLiczbe(0, y + 1); 
       } else {
         n = wybierzLiczbe(x + 1, y);
       }
@@ -80,12 +80,20 @@ void Plansza::wypiszPlansze() {
 }
 void Plansza::wypiszPlansze(int x, int y, int screen[2]) {
 
-  int start_y = screen[1]/2 - 5;
+  int start_y = screen[1]/2 - 7;
   int start_x = screen[0]/2 - 13;
   int max_y;
   int max_x;
+  int lx = 0;
+  int ly = 0;
   for (int row = 0; row < 9; ++row) {
+    
     int line_y = start_y + 2 + row;
+    if (row % 3 == 0 && row != 0){
+      attron(COLOR_PAIR(3));
+      mvprintw(line_y+ly, start_x+2, "---------|---------|---------");
+      ly += 1;
+    }
     for (int col = 0; col < 9; ++col) {
       int cell_x = start_x + 3 + col * 3;
       if (row == x && col == y) {
@@ -96,9 +104,9 @@ void Plansza::wypiszPlansze(int x, int y, int screen[2]) {
         attron(COLOR_PAIR(1));
       }
       if (plansza[row][col] == 0) {
-        mvprintw(line_y, cell_x, "   ");
+        mvprintw(line_y+ly, cell_x, "   ");
       } else {
-        mvprintw(line_y, cell_x, " %d ", plansza[row][col]);
+        mvprintw(line_y+ly, cell_x, " %d ", plansza[row][col]);
       }
     max_x = cell_x-start_x;
     }
