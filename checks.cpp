@@ -1,4 +1,4 @@
-#include "checks.h"
+#include "main.h"
 
 bool sprawdzKwadrat(int plansza[9][9], int x, int y) {
 
@@ -8,9 +8,9 @@ bool sprawdzKwadrat(int plansza[9][9], int x, int y) {
       if (plansza[i][j] != 0) {          // 0 - puste pole - ignorujemy
         if (num[plansza[i][j] - 1] == 0) // jezeli liczba nie istnieje,
           num[plansza[i][j] - 1] = 1;
-        else
+        else{
           return false;
-        ;
+        }
       }
     }
   }
@@ -44,7 +44,7 @@ bool sprawdzWiersz(int plansza[9][9], int y) {
   return true;
 }
 
-bool SprawdzPlansze(int plansza[9][9]) {
+bool czyPoprawna(int plansza[9][9]) {
   // kwadraty
   for (int i = 0; i < 3; i++) {
     for (int j = 0; j < 3; j++) {
@@ -65,3 +65,5 @@ bool SprawdzPlansze(int plansza[9][9]) {
   }
   return true;
 }
+
+
