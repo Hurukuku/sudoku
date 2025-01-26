@@ -1,20 +1,20 @@
 #include "main.h"
 
-bool Plansza::wybierzLiczbe(int x, int y) {
+bool Sudoku::chooseNumber(int x, int y) {
   std::random_device rd;
   std::mt19937 g(rd());
   int nums[9] = {1, 2, 3, 4, 5, 6, 7, 8, 9};
   std::shuffle(std::begin(nums), std::end(nums), g);
   for (auto num : nums) {
-    plansza[x][y] = num;
-    if (czyPoprawna()) {
+    currentBoard[x][y] = num;
+    if (validateBoard()) {
       bool n;
       if (x == 8 && y == 8) {
         return true;
       } else if (x == 8) {
-        n = wybierzLiczbe(0, y + 1);
+        n = chooseNumber(0, y + 1);
       } else {
-        n = wybierzLiczbe(x + 1, y);
+        n = chooseNumber(x + 1, y);
       }
       if (!n) {
         continue;
@@ -23,15 +23,15 @@ bool Plansza::wybierzLiczbe(int x, int y) {
       }
     }
   }
-  plansza[x][y] = 0;
+  currentBoard[x][y] = 0;
   return false;
 }
 
-void Plansza::generujPlansze() {
-  wybierzLiczbe(0, 0);
+void Sudoku::genBoard() {
+  chooseNumber(0, 0);
   for (int n = 0; n < 8; n++) {
     for (int m = 0; m < 8; m++) {
-      solved[n][m] = plansza[n][m];
+      solvedBoard[n][m] = currentBoard[n][m];
     }
   }
   for (int i = 0; i < 15; i++) {
@@ -41,18 +41,18 @@ void Plansza::generujPlansze() {
     while (true) {
       int x = ds(g);
       int y = ds(g);
-      if (plansza[x][y] == 0) {
+      if (currentBoard[x][y] == 0) {
         continue;
       } else {
-        plansza[x][y] = 0;
-        emptyCells[x][y] = 1;
+        currentBoard[x][y] = 0;
+        isCellEmpty[x][y] = 1;
         break;
       }
     }
   }
 }
 
-void Plansza::wypiszPlansze() {
+void Sudoku::printBoard() {
 
   int start_y = 1;
   int start_x = 1;
@@ -60,25 +60,25 @@ void Plansza::wypiszPlansze() {
     int line_y = start_y + 2 + row;
     for (int col = 0; col < 9; ++col) {
       int cell_x = start_x + 3 + col * 2;
-      if (emptyCells[row][col] == 1) {
+      if (isCellEmpty[row][col] == 1) {
         attron(COLOR_PAIR(4));
       } else {
         attron(COLOR_PAIR(1));
       }
-      if (plansza[row][col] == 0) {
+      if (currentBoard[row][col] == 0) {
         mvprintw(line_y, cell_x, " ");
       } else {
-        mvprintw(line_y, cell_x, "%d", plansza[row][col]);
+        mvprintw(line_y, cell_x, "%d", currentBoard[row][col]);
       }
     }
   }
   attron(COLOR_PAIR(1));
   refresh();
 }
-void Plansza::wypiszPlansze(int x, int y, int screen[2]) {
+void Sudoku::printBoard(int x, int y, int screen[2]) {
   if (screen[0] > 30 and screen[1] > 15) {
     int k = 3;
-    if (isComplete() && czyPoprawna())
+    if (isComplete() && validateBoard())
       k = 4;
     int start_y = screen[1] / 2 - 7;
     int start_x = screen[0] / 2 - 17;
@@ -98,15 +98,15 @@ void Plansza::wypiszPlansze(int x, int y, int screen[2]) {
         int cell_x = start_x + 3 + col * 3;
         if (row == x && col == y) {
           attron(COLOR_PAIR(2));
-        } else if (emptyCells[row][col] == 1) {
+        } else if (isCellEmpty[row][col] == 1) {
           attron(COLOR_PAIR(k));
         } else {
           attron(COLOR_PAIR(1));
         }
-        if (plansza[row][col] == 0) {
+        if (currentBoard[row][col] == 0) {
           mvprintw(line_y + ly, cell_x, "   ");
         } else {
-          mvprintw(line_y + ly, cell_x, " %d ", plansza[row][col]);
+          mvprintw(line_y + ly, cell_x, " %d ", currentBoard[row][col]);
         }
         max_x = cell_x - start_x;
       }
@@ -146,41 +146,41 @@ void Plansza::wypiszPlansze(int x, int y, int screen[2]) {
     refresh();
   } else {
     attron(COLOR_PAIR(3));
-    printw("Window is too small!");
+    printw("Okno jest za male!");
   }
 }
 
-void Plansza::ustaw(int x, int y, int n) {
+void Sudoku::setCellValue(int x, int y, int n) {
   if (n == 48) {
-    plansza[x][y] = 0;
-  } else if (emptyCells[x][y] == 1) {
-    plansza[x][y] = n - 48;
+    currentBoard[x][y] = 0;
+  } else if (isCellEmpty[x][y] == 1) {
+    currentBoard[x][y] = n - 48;
   }
 }
 
-bool Plansza::czyPoprawna() {
+bool Sudoku::validateBoard() {
   // kwadraty
   for (int i = 0; i < 3; i++) {
     for (int j = 0; j < 3; j++) {
-      if (!sprawdzKwadrat(plansza, i * 3, j * 3))
+      if (!validateSquare(currentBoard, i * 3, j * 3))
         return false;
     }
   }
   // kolumny
   for (int i = 0; i < 9; i++) {
-    if (!sprawdzKolumne(plansza, i)) {
+    if (!validateCol(currentBoard, i)) {
       return false;
     }
   }
   for (int i = 0; i < 9; i++) {
-    if (!sprawdzWiersz(plansza, i)) {
+    if (!validateRow(currentBoard, i)) {
       return false;
     }
   }
   return true;
 }
-bool Plansza::isComplete() {
-  for (auto &x : plansza) {
+bool Sudoku::isComplete() {
+  for (auto &x : currentBoard) {
     for (auto y : x) {
       if (y == 0)
         return false;

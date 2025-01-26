@@ -19,13 +19,13 @@ int main() {
 
 void gra(int poziom) {
   int key;
-  Plansza plansza;
-  plansza.generujPlansze();
+  Sudoku sudoku;
+  sudoku.genBoard();
   int screen[2];
   getmaxyx(stdscr, screen[1], screen[0]);
   int x = 0;
   int y = 0;
-  plansza.wypiszPlansze(x, y, screen);
+  sudoku.printBoard(x, y, screen);
   while (1) {
     int newscreen[2];
     getmaxyx(stdscr, newscreen[1], newscreen[0]);
@@ -33,7 +33,7 @@ void gra(int poziom) {
       screen[0] = newscreen[0];
       screen[1] = newscreen[1];
       clear();
-      plansza.wypiszPlansze(x, y, screen);
+      sudoku.printBoard(x, y, screen);
     }
     // printw("x: %d y: %d", screen[0], screen[1]);
     key = wgetch(stdscr);
@@ -62,7 +62,7 @@ void gra(int poziom) {
       x = 99;
       break;
     case 99:
-      if (plansza.czyPoprawna()) {
+      if (sudoku.validateBoard()) {
         printw("    1");
       } else {
         printw("    2");
@@ -70,7 +70,7 @@ void gra(int poziom) {
 
     default:
       if (key > 47 and key < 58) {
-        plansza.ustaw(x, y, key);
+        sudoku.setCellValue(x, y, key);
       }
       // printw("%d", key);
 
@@ -79,6 +79,6 @@ void gra(int poziom) {
     if (x == 99) {
       break;
     }
-    plansza.wypiszPlansze(x, y, screen);
+    sudoku.printBoard(x, y, screen);
   }
 }

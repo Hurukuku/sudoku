@@ -5,31 +5,28 @@
 #include <string>
 
 
-const std::string menuItems[3] = {
+const std::string MENU_ITEMS[3] = {
   "  Graj!   ",
   "  Zasady  ",
   "  Wyjdz   "
 };
 
-struct Plansza {
-  int solved[9][9] = {{0}};
-  int emptyCells[9][9] = {{0}};
-  int plansza[9][9] = {{0}};
-  bool czyPoprawna();
-  void generujPlansze();
-  void wypiszPlansze();
-  void wypiszPlansze(int x, int y, int screen[2]);
-  bool wybierzLiczbe(int x, int y);
-  void ustaw(int x, int y, int n);
+struct Sudoku {
+  int solvedBoard[9][9] = {{0}};
+  int isCellEmpty[9][9] = {{0}};
+  int currentBoard[9][9] = {{0}};
+  bool validateBoard();
+  void genBoard();
+  void printBoard();
+  void printBoard(int x, int y, int screen[2]);
+  bool chooseNumber(int x, int y);
+  void setCellValue(int x, int y, int n);
   bool isComplete();
 };
 
-const int test[2] = {0 ,0};
-
-bool sprawdzKwadrat(int plansza[9][9], int x, int y);
-bool sprawdzKolumne(int plansza[9][9], int x);
-bool sprawdzWiersz(int plansza[9][9], int y);
-bool czyPoprawna(int plansza[9][9]);
-void gra(int poziom);
+bool validateSquare(int board[9][9], int x, int y);
+bool validateCol(int board[9][9], int x);
+bool validateRow(int board[9][9], int y);
+void startGame();
 void menu();
-void printMenu(const int screen[2] = &test[2], int selected = 0);
+void printMenu(const int screen[2], int selected);

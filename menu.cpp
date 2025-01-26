@@ -8,7 +8,7 @@ void printMenu(const int screen[2], int selected) {
     attron(COLOR_PAIR(1));
     if (i == selected)
       attron(COLOR_PAIR(2));
-    mvprintw(start_y + i + 2, start_x, menuItems[i].c_str());
+    mvprintw(start_y + i + 2, start_x, MENU_ITEMS[i].c_str());
   }
   refresh();
 }
@@ -44,7 +44,7 @@ void menu() {
     case 10:
       switch (x) {
       case 0:
-        gra(0);
+        startGame();
         clear();
         break;
       case 1:
