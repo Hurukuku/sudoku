@@ -1,7 +1,4 @@
 #include "main.h"
-#include <algorithm>
-#include <ncurses.h>
-#include <random>
 
 bool Plansza::wybierzLiczbe(int x, int y) {
   std::random_device rd;
@@ -15,7 +12,7 @@ bool Plansza::wybierzLiczbe(int x, int y) {
       if (x == 8 && y == 8) {
         return true;
       } else if (x == 8) {
-        n = wybierzLiczbe(0, y + 1); 
+        n = wybierzLiczbe(0, y + 1);
       } else {
         n = wybierzLiczbe(x + 1, y);
       }
@@ -37,7 +34,7 @@ void Plansza::generujPlansze() {
       solved[n][m] = plansza[n][m];
     }
   }
-  for (int i = 0; i < 30; i++) {
+  for (int i = 0; i < 15; i++) {
     std::random_device rd;
     std::mt19937 g(rd());
     std::uniform_int_distribution<> ds(0, 8);
@@ -79,58 +76,78 @@ void Plansza::wypiszPlansze() {
   refresh();
 }
 void Plansza::wypiszPlansze(int x, int y, int screen[2]) {
-
-  int start_y = screen[1]/2 - 7;
-  int start_x = screen[0]/2 - 13;
-  int max_y;
-  int max_x;
-  int lx = 0;
-  int ly = 0;
-  for (int row = 0; row < 9; ++row) {
-    
-    int line_y = start_y + 2 + row;
-    if (row % 3 == 0 && row != 0){
-      attron(COLOR_PAIR(3));
-      mvprintw(line_y+ly, start_x+2, "---------|---------|---------");
-      ly += 1;
-    }
-    for (int col = 0; col < 9; ++col) {
-      int cell_x = start_x + 3 + col * 3;
-      if (row == x && col == y) {
-        attron(COLOR_PAIR(2));
-      } else if (emptyCells[row][col] == 1) {
-        attron(COLOR_PAIR(3));
-      } else {
-        attron(COLOR_PAIR(1));
+  if (screen[0] > 30 and screen[1] > 15) {
+    int k = 3;
+    if (isComplete() && czyPoprawna())
+      k = 4;
+    int start_y = screen[1] / 2 - 7;
+    int start_x = screen[0] / 2 - 17;
+    int max_y;
+    int max_x;
+    int lx = 0;
+    int ly = 0;
+    for (int row = 0; row < 9; ++row) {
+					
+      int line_y = start_y + row;
+      if (row % 3 == 0 && row != 0) {
+        attron(COLOR_PAIR(k));
+        mvprintw(line_y + ly, start_x + 2, "---------|---------|---------");
+        ly += 1;
       }
-      if (plansza[row][col] == 0) {
-        mvprintw(line_y+ly, cell_x, "   ");
-      } else {
-        mvprintw(line_y+ly, cell_x, " %d ", plansza[row][col]);
+      for (int col = 0; col < 9; ++col) {
+        int cell_x = start_x + 3 + col * 3;
+        if (row == x && col == y) {
+          attron(COLOR_PAIR(2));
+        } else if (emptyCells[row][col] == 1) {
+          attron(COLOR_PAIR(k));
+        } else {
+          attron(COLOR_PAIR(1));
+        }
+        if (plansza[row][col] == 0) {
+          mvprintw(line_y + ly, cell_x, "   ");
+        } else {
+          mvprintw(line_y + ly, cell_x, " %d ", plansza[row][col]);
+        }
+        max_x = cell_x - start_x;
       }
-    max_x = cell_x-start_x;
+      max_y = line_y - start_y;
     }
-    max_y = line_y-start_y;
+    // printw(" %d ", screen[0]);
+    int menu_x, menu_y;
+    if (screen[0] < 85) {
+      menu_x = start_x + 3;
+      menu_y = max_y - 5;
+    } else {
+      menu_x = 2;
+      menu_y = start_y;
+    }
+    attron(COLOR_PAIR(3));
+    mvprintw(menu_y, menu_x + 3, "6");
+    attron(COLOR_PAIR(1));
+    mvprintw(menu_y, menu_x + 8, " <- Twoje liczby");
+    menu_y += 2;
+    attron(COLOR_PAIR(1));
+    mvprintw(menu_y, menu_x + 3, "6");
+    attron(COLOR_PAIR(1));
+    mvprintw(menu_y, menu_x + 8, " <- Stale liczby");
+    menu_y += 2;
+    attron(COLOR_PAIR(2));
+    mvprintw(menu_y, menu_x + 2, " 6 ");
+    attron(COLOR_PAIR(1));
+    mvprintw(menu_y, menu_x + 8, " <- Kursor");
+    menu_y += 2;
+    mvprintw(menu_y, menu_x, "Strzalki <- Poruszanie");
+    menu_y += 2;
+    mvprintw(menu_y, menu_x, "   Q     <- Wyjscie");
+    menu_y += 2;
+    mvprintw(menu_y, menu_x, "   C     <- Sprawdz");
+    // printw("x: %d y: %d", max_x, max_y);
+    attron(COLOR_PAIR(1));
+    refresh();
+  } else {
+    attron(COLOR_PAIR(3));
+    printw("Window is too small!");
   }
-  int menu_x = 5;
-  int menu_y = start_y + 2;
-  attron(COLOR_PAIR(3));
-  mvprintw( menu_y, menu_x, "6");
-  attron(COLOR_PAIR(1));
-  mvprintw(menu_y, menu_x +2 , " <- Twoje liczby");
-  menu_y += 2;
-  attron(COLOR_PAIR(1));
-  mvprintw( menu_y, menu_x, "6");
-  attron(COLOR_PAIR(1));
-  mvprintw(menu_y, menu_x +2 , " <- Stale liczby");
-  menu_y += 2;
-  attron(COLOR_PAIR(2));
-  mvprintw( menu_y, menu_x-1, " 6 ");
-  attron(COLOR_PAIR(1));
-  mvprintw(menu_y, menu_x +2 , " <- Kursor");
-  // printw("x: %d y: %d", max_x, max_y);
-  attron(COLOR_PAIR(1));
-  refresh();
 }
 
 void Plansza::ustaw(int x, int y, int n) {
@@ -158,6 +175,15 @@ bool Plansza::czyPoprawna() {
   for (int i = 0; i < 9; i++) {
     if (!sprawdzWiersz(plansza, i)) {
       return false;
+    }
+  }
+  return true;
+}
+bool Plansza::isComplete() {
+  for (auto &x : plansza) {
+    for (auto y : x) {
+      if (y == 0)
+        return false;
     }
   }
   return true;
