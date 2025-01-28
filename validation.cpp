@@ -6,10 +6,10 @@ bool validateSquare(int board[9][9], int x, int y) {
   for (int i = x; i < 3 + x; i++) {
     for (int j = y; j < 3 + y; j++) {
       if (board[i][j] != 0) {          // 0 - puste pole - ignorujemy
-        if (num[board[i][j] - 1] == 0) // jezeli liczba nie istnieje,
-          num[board[i][j] - 1] = 1;
-        else{
-          return false;
+        if (num[board[i][j] - 1] == 0) // jezeli liczba nie mamy w naszej liscie to ja tam dodajemy
+          num[board[i][j] - 1] = 1;  
+        else{ 
+          return false;       // jak juz istnieje to zwracamy falsz
         }
       }
     }
