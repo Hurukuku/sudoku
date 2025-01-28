@@ -17,7 +17,7 @@ int main() {
   return 0;
 }
 
-void gra(int poziom) {
+void startGame() {
   int key;
   Sudoku sudoku;
   sudoku.genBoard();
